@@ -1,8 +1,6 @@
 package com.sapient.pjp3.dao;
 
-import com.sapient.pjp3.entity.Book;
 import com.sapient.pjp3.entity.Review;
-import com.sapient.pjp3.entity.User;
 import com.sapient.pjp3.utils.DBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,6 +149,29 @@ public class ReviewsDao {
 			return true;
 		} 
 		catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return false;
+	}
+
+	public Object checkReviewStatus(Integer userId, Long isbn) {
+		String sql = "Select r.reviewId " +
+				"from reviews as r where r.userId = ? AND r.isbn = ?";
+		Logger log = LoggerFactory.getLogger(BooksDao.class);
+		
+		try (Connection conn = DBUtils.createConnection(); PreparedStatement stmt = conn.prepareStatement(sql);) {
+	
+			stmt.setInt(1, userId);
+			stmt.setLong(2, isbn);
+			log.info(stmt.toString());
+			ResultSet rs =  stmt.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("reviewId");
+			}
+			
+		} catch (Exception ex) {
+			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 		return false;

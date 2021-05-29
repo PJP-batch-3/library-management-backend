@@ -4,8 +4,6 @@ package com.sapient.pjp3.controllers;
 import com.sapient.pjp3.dao.BookRequestsDao;
 import com.sapient.pjp3.dao.BooksDao;
 import com.sapient.pjp3.dao.ReviewsDao;
-import com.sapient.pjp3.dao.UsersDao;
-import com.sapient.pjp3.entity.Book;
 import com.sapient.pjp3.entity.BookRequest;
 import com.sapient.pjp3.entity.Review;
 import com.sapient.pjp3.utils.JwtUtil;
@@ -16,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -221,7 +217,12 @@ public class BooksController {
 	}
     
     @GetMapping("/{isbn}/reviews")
-    public ResponseEntity<?> getReviews(@PathVariable Long isbn){
+    public ResponseEntity<?> getReviews(
+    		@RequestHeader(name = "Authorization", required = false) String authHeader,
+    		@PathVariable Long isbn){
+    	
+    	Logger log = LoggerFactory.getLogger(BooksController.class);
+    	log.info("authHeader = {}", authHeader);
     	
     	BooksDao booksDao = new BooksDao();
     	ReviewsDao reviewsDao = new ReviewsDao();
@@ -229,6 +230,19 @@ public class BooksController {
     	Map<String, Object> map = new HashMap<>();
     	map.put("Book", booksDao.getBookByIsbn(isbn));
     	map.put("ListOfReviews", reviewsDao.getReviewsByIsbn(isbn));
+    	
+    	if(authHeader!=null) {
+        	try {
+        		String token = authHeader.split(" ")[1]; // second element from the header's value
+    			log.info("totken = {}", token);
+    			Integer userId = JwtUtil.verify(token);
+        		map.put("isReviewedByUser", reviewsDao.checkReviewStatus(userId, isbn));
+    			
+    		}
+    		catch(Exception ex) {
+    			map.put("isReviewedByUser", false);
+    		}
+		}
     	
     	return ResponseEntity.ok(map);
     }
