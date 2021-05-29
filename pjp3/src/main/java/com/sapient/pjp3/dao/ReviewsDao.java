@@ -107,7 +107,7 @@ public class ReviewsDao {
 		return null;
 	}
 
-	public void addReview(Review review) {
+	public boolean addReview(Review review) {
 		String sql = "INSERT INTO REVIEWS (issueId, userId, isbn, rating, review) VALUES (?, ?, ?, ?, ?)";
 		Logger log = LoggerFactory.getLogger(ReviewsDao.class);
 		try (Connection conn = DBUtils.createConnection(); 
@@ -126,10 +126,10 @@ public class ReviewsDao {
 			log.info(stmt.toString());
 			
 			stmt.executeUpdate();
-			
+			return true;
 		} 
 		catch (Exception ex) {
-			ex.printStackTrace();
+			return false;
 			
 		}
 	}
