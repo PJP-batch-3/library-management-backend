@@ -1194,7 +1194,8 @@ CREATE TABLE `reviews` (
   `userId` int(8) DEFAULT NULL,
   `isbn` bigint(20) DEFAULT NULL,
   `rating` int(1) DEFAULT NULL,
-  `review` varchar(6000) DEFAULT NULL
+  `review` varchar(6000) DEFAULT NULL,
+  UNIQUE KEY(`userId`,`isbn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
