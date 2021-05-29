@@ -272,10 +272,10 @@ public class BooksController {
 	
 			log.info(reviewRequest.toString());
 			
-			reviewDao.addReview(reviewRequest);
+			boolean reviewStatus = reviewDao.addReview(reviewRequest);
 			
 			Map<String, Object> map = new HashMap<>();
-			map.put("success", true);
+			map.put("success", reviewStatus);
 			map.put("userId", userId);
 			map.put("review", reviewRequest.getReview());
 			map.put("rating", reviewRequest.getRating());			
